@@ -13,5 +13,12 @@
     "nuxt": "^3.11.2",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@nuxt/image": "^1.7.0",
+    "@nuxtjs/eslint-module": "^4.1.0",
+    "@pinia/nuxt": "^0.5.1",
+    "@vueuse/nuxt": "^10.11.0",
+    "vuetify-nuxt-module": "^0.14.1"
   }
 }
