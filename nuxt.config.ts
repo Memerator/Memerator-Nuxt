@@ -18,6 +18,10 @@ export default defineNuxtConfig({
     }
   },
 
+  experimental: {
+    asyncContext: true
+  },
+
   modules: [
     "@pinia/nuxt",
     "@nuxt/image",

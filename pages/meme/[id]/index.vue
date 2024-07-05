@@ -254,7 +254,6 @@ export default defineComponent({
   name: "MemeView",
 
   async setup() {
-
     const route = useRoute()
     const id = route.params.id
 
@@ -263,19 +262,19 @@ export default defineComponent({
       meme = res
     })
 
-    useSeoMeta({
-      title: `Meme Viewing ${meme.memeid} - Memerator`,
-      ogImage: {
-        secureUrl: meme.url,
-        url: meme.url,
-        alt: meme.caption,
-      },
-      description: `${meme.caption} by ${meme.author.username} for Memerator`,
-      ogDescription: `${meme.caption} by ${meme.author.username} for Memerator`,
-      articleAuthor: meme.author.username,
-      // keywords: meme.ocr
-      author: meme.author.username
-    } as UseSeoMetaInput);
+    // useSeoMeta({
+    //   title: `Meme Viewing ${meme.memeid} - Memerator`,
+    //   ogImage: {
+    //     secureUrl: meme.url,
+    //     url: meme.url,
+    //     alt: meme.caption,
+    //   },
+    //   description: `${meme.caption} by ${meme.author.username} for Memerator`,
+    //   ogDescription: `${meme.caption} by ${meme.author.username} for Memerator`,
+    //   articleAuthor: meme.author.username,
+    //   // keywords: meme.ocr
+    //   author: meme.author.username
+    // } as UseSeoMetaInput);
 
     const memeisreal = true // check if null
 
