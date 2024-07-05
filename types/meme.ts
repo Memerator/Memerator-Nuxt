@@ -21,7 +21,7 @@ export interface Meme {
     /**
      * A rating object of this meme.
      */
-    rating: Rating;
+    rating: MemeRatingStats;
     /**
      * The age rating of this meme.
      */
@@ -48,8 +48,13 @@ export interface Meme {
     time_ago: string;
 }
 
-export interface Rating {
+export interface MemeRatingStats {
     average: number;
     total: number;
 }
 
+export interface Rating {
+    user: Author;
+    rating: number;
+    timestamp: Date;
+}
