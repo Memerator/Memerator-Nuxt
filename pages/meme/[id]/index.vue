@@ -11,7 +11,7 @@
         [pfp]
         <a :style="`color: #${meme.author.pro.name_color}`" :href="`/profile/${meme.author.username}`">
           {{ meme.author.username }}
-        </a> [verified image]
+        </a> <i v-if="meme.author.perks.verified" class="fas fa-badge-check text-blue" />
 
         <h2>Age Rating</h2>
         {{ meme.age }}
@@ -32,8 +32,7 @@
         <h2>Submitted</h2>
         {{ meme.timestamp }}
 
-        <span class="heading">Ratings</span>
-        <br/>
+        <h2>Ratings</h2>
         <p v-if="meme.rating.total === 0">No one has rated this meme yet!</p>
         <!--        <div class="ratings">-->
         <!--          <span class="empty-stars"></span>-->
@@ -249,6 +248,7 @@ import type {Meme} from "~/types/meme";
 import type {Comment} from "~/types/comment";
 
 import {defineComponent} from 'vue'
+import type {UseSeoMetaInput} from "@unhead/schema";
 
 export default defineComponent({
   name: "MemeView",
@@ -263,19 +263,19 @@ export default defineComponent({
       meme = res
     })
 
-    // useSeoMeta({
-    //   title: `Meme Viewing ${meme.memeid} - Memerator`,
-    //   ogImage: {
-    //     secureUrl: meme.url,
-    //     url: meme.url,
-    //     alt: meme.caption,
-    //   },
-    //   description: `${meme.caption} by ${meme.author.username} for Memerator`,
-    //   ogDescription: `${meme.caption} by ${meme.author.username} for Memerator`,
-    //   articleAuthor: meme.author.username,
-    //   // keywords: meme.ocr
-    //   author: meme.author.username
-    // });
+    useSeoMeta({
+      title: `Meme Viewing ${meme.memeid} - Memerator`,
+      ogImage: {
+        secureUrl: meme.url,
+        url: meme.url,
+        alt: meme.caption,
+      },
+      description: `${meme.caption} by ${meme.author.username} for Memerator`,
+      ogDescription: `${meme.caption} by ${meme.author.username} for Memerator`,
+      articleAuthor: meme.author.username,
+      // keywords: meme.ocr
+      author: meme.author.username
+    } as UseSeoMetaInput);
 
     const memeisreal = true // check if null
 
