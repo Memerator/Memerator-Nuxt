@@ -8,6 +8,16 @@ export default defineNuxtConfig({
     public: {},
   },
 
+  app: {
+    head: {
+      link: [],
+      script: [{
+        src: 'https://kit.fontawesome.com/99eae2971f.js',
+        crossorigin: 'anonymous'
+      }]
+    }
+  },
+
   modules: [
     "@pinia/nuxt",
     "@nuxt/image",

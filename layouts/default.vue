@@ -4,14 +4,25 @@
       <v-container class="mx-auto d-flex align-center justify-center">
         <v-avatar class="me-4 " color="grey-darken-1" size="32" />
 
-<!--        <navbar-item name="Home" href="/" :current-path="useRoute().path" />-->
+        <navbar-item name="Home" href="/" :current-path="useRoute().path" />
 
-<!--        <nav-dropdown name="Games" fa-icon="fas fa-chess">-->
-<!--          <nav-dropdown-item name="New Game" fa-icon="fas fa-plus" href="/game/new" />-->
-<!--          <v-divider />-->
-<!--          <nav-dropdown-item name="My Games" fa-icon="fas fa-chess" href="/games" />-->
-<!--          <nav-dropdown-item name="Game Importer" fa-icon="fas fa-download" href="/games/import" />-->
-<!--        </nav-dropdown>-->
+        <nav-dropdown name="Memes">
+          <nav-dropdown-item v-if="loggedIn" name="Following Memes" fa-icon="fas fa-check" href="/meme/following" />
+          <nav-dropdown-item v-if="loggedIn" name="Submit Meme" fa-icon="fas fa-pen" href="/meme/submit" />
+          <nav-dropdown-item name="Recent Memes" fa-icon="far fa-clock" href="/meme/recents" />
+          <nav-dropdown-item name="Top Memes" fa-icon="fas fa-trophy" href="/meme/top" />
+          <nav-dropdown-item name="Top Memers" fa-icon="fas fa-award" href="/meme/topmemers" />
+        </nav-dropdown>
+
+        <nav-dropdown name="Extra">
+          <nav-dropdown-item name="Site Stats" fa-icon="fas fa-chart-area" href="/stats" />
+          <nav-dropdown-item name="API" fa-icon="fas fa-cogs" href="/api/auth" />
+          <nav-dropdown-item name="Staff" fa-icon="fas fa-user-tie" href="/staff" />
+          <nav-dropdown-item name="Bugs & Feedback" fa-icon="fas fa-bug" href="https://github.com/Memerator/Memerator-Nuxt" />
+          <nav-dropdown-item name="Partners" fa-icon="fas fa-handshake" href="/partners" />
+          <nav-dropdown-item name="Updates" fa-icon="fas fa-exclamation" href="/updates" />
+          <nav-dropdown-item name="Discord Bot" fa-icon="fas fa-robot" href="/discordbot" />
+        </nav-dropdown>
 
         <v-spacer />
 
@@ -63,6 +74,10 @@
 // }
 
 // const user = useSupabaseUser().value
+import NavbarItem from "~/components/NavbarItem.vue";
+
+const loggedIn = false
+
 const route = useRoute()
 
 let isMobile = ref(false)
@@ -92,7 +107,7 @@ async function logout() {
 <!--suppress CssUnusedSymbol -->
 <style>
 :root {
-  --background-color: #b98761;
+  --background-color: #fabc4d;
 }
 
 .p-2 {
