@@ -1,75 +1,30 @@
-# Nuxt 3 Minimal Starter
+# Memerator Nuxt
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+This repository houses the source code for the Memerator website (and eventually API).
+It is a rewrite of the original, closed source Memerator.me website, rewritten in Nuxt.js and made open source for the community.
 
-## Setup
+Memerator is a meme website that allows users to rate memes on a scale of 1-5, and submit their own memes to be rated by the community.
+You can learn more about its history [here](https://chew.wiki/view/Memerator).
+
+If you have a bug report with this site, please make an issue. 
+We are currently in the process of migrating stuff from the old site, so no new suggestions are needed at this time.
+
+## Contributing
+
+If you would like to contribute, please follow the instructions below:
 
 Make sure to install the dependencies:
 
 ```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
 # bun
 bun install
 ```
 
-## Development Server
+### Development Server
 
 Start the development server on `http://localhost:3000`:
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
 # bun
 bun run dev
 ```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
