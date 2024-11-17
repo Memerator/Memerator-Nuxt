@@ -31,7 +31,8 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@vueuse/nuxt",
     'vuetify-nuxt-module',
-    "@nuxt/eslint"
+    "@nuxt/eslint",
+    "@prisma/nuxt"
   ],
 
   compatibilityDate: "2024-11-12"

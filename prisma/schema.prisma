@@ -1,0 +1,333 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model ar_internal_metadata {
+  key        String   @id @db.VarChar(255)
+  value      String?  @db.VarChar(255)
+  created_at DateTime @db.DateTime(6)
+  updated_at DateTime @db.DateTime(6)
+}
+
+model authkeys {
+  id          Int      @id @default(autoincrement())
+  user_id     BigInt
+  token       String   @unique(map: "token") @db.VarChar(128)
+  service     Boolean  @default(false)
+  description String?  @db.Text
+  perms       Int      @default(0)
+  created_at  DateTime @default(now()) @db.Timestamp(0)
+  updated_at  DateTime @default(now()) @db.Timestamp(0)
+  users       users    @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_rails_a088a68405")
+
+  @@index([user_id], map: "fk_rails_a088a68405")
+}
+
+model comments {
+  id         Int      @id @default(autoincrement())
+  user_id    BigInt
+  text       String   @db.Text
+  meme_id    String   @db.VarChar(10)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  parent     Int?
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+  users      users    @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_rails_03de2dc08c")
+  memes      memes    @relation(fields: [meme_id], references: [id], onUpdate: Restrict, map: "fk_rails_feda6535c7")
+
+  @@index([user_id], map: "fk_rails_03de2dc08c")
+  @@index([meme_id], map: "fk_rails_feda6535c7")
+}
+
+model contests {
+  id          Int      @id @default(autoincrement())
+  start       DateTime @db.Date
+  conclude    DateTime @db.Date
+  name        String   @db.Text
+  slug        String   @db.Text
+  description String   @db.Text
+  guidelines  String?  @db.Text
+  created_at  DateTime @default(now()) @db.Timestamp(0)
+  updated_at  DateTime @default(now()) @db.Timestamp(0)
+  memes       memes[]
+}
+
+model credits {
+  id                             Int       @id @default(autoincrement())
+  owner_id                       BigInt
+  holder_id                      BigInt?
+  note                           String?   @db.Text
+  gift                           Boolean   @default(false)
+  link                           String?   @db.Text
+  redeemed                       Boolean   @default(false)
+  created_at                     DateTime  @default(now()) @db.Timestamp(0)
+  redeemed_at                    DateTime? @db.Timestamp(0)
+  updated_at                     DateTime  @default(now()) @db.Timestamp(0)
+  users_credits_holder_idTousers users?    @relation("credits_holder_idTousers", fields: [holder_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_rails_c9ba5db92f")
+  users_credits_owner_idTousers  users     @relation("credits_owner_idTousers", fields: [owner_id], references: [id], onUpdate: Restrict, map: "fk_rails_ceacfd9dd2")
+
+  @@index([holder_id], map: "fk_rails_c9ba5db92f")
+  @@index([owner_id], map: "fk_rails_ceacfd9dd2")
+}
+
+model influencers {
+  id         Int      @id @default(autoincrement())
+  code       String   @db.VarChar(32)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+}
+
+model integrations {
+  id         Int      @id @default(autoincrement())
+  user_id    BigInt
+  kind       String   @db.Text
+  data       String   @db.Text
+  shown_data String?  @db.Text
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+  users      users    @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_rails_99d169fb59")
+
+  @@index([user_id], map: "fk_rails_99d169fb59")
+}
+
+model logs {
+  id         Int      @id @default(autoincrement())
+  kind       String   @db.Text
+  user_id    BigInt
+  ip         String?  @db.Text
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+  users      users    @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_rails_8fc980bf44")
+
+  @@index([user_id], map: "fk_rails_8fc980bf44")
+}
+
+model memes {
+  id          String      @id @db.VarChar(10)
+  user_id     BigInt
+  caption     String?     @db.Text
+  age         Int         @default(1)
+  ocr         String?     @db.Text
+  ocrverified Boolean     @default(false)
+  disabled    Boolean     @default(false)
+  approved    Boolean     @default(false)
+  dmca        Boolean     @default(false)
+  url         String      @db.Text
+  realm_id    Int?
+  contest_id  Int?
+  realmstatus Int         @default(0)
+  created_at  DateTime    @default(now()) @db.Timestamp(0)
+  updated_at  DateTime?   @default(now()) @db.DateTime(0)
+  comments    comments[]
+  users       users       @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_rails_0dd3229ca9")
+  realms      realms?     @relation(fields: [realm_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_rails_5d879faad1")
+  contests    contests?   @relation(fields: [contest_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_rails_c5e2beebb7")
+  ratings     ratings[]
+  transfers   transfers[]
+
+  @@index([user_id], map: "fk_rails_0dd3229ca9")
+  @@index([realm_id], map: "fk_rails_5d879faad1")
+  @@index([contest_id], map: "fk_rails_c5e2beebb7")
+}
+
+model modlogs {
+  id         Int      @id @default(autoincrement())
+  user_id    BigInt?
+  action     String?  @db.MediumText
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+  users      users?   @relation(fields: [user_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_rails_c8be2676f8")
+
+  @@index([user_id], map: "fk_rails_c8be2676f8")
+}
+
+model notifications {
+  id                                   Int       @id @default(autoincrement())
+  user_id                              BigInt
+  sender_id                            BigInt
+  message                              String    @db.Text
+  created_at                           DateTime  @default(now()) @db.Timestamp(0)
+  updated_at                           DateTime? @default(now()) @db.DateTime(0)
+  users_notifications_sender_idTousers users     @relation("notifications_sender_idTousers", fields: [sender_id], references: [id], onUpdate: Restrict, map: "fk_rails_8780923399")
+  users_notifications_user_idTousers   users     @relation("notifications_user_idTousers", fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_rails_b080fb4855")
+
+  @@index([sender_id], map: "fk_rails_8780923399")
+  @@index([user_id], map: "fk_rails_b080fb4855")
+}
+
+model payments {
+  id         Int       @id @default(autoincrement())
+  user_id    BigInt
+  stripe_id  String    @db.Text
+  processed  DateTime  @default(now()) @db.Timestamp(0)
+  item       String    @db.Text
+  promo      String?   @db.Text
+  expires    DateTime  @default(now()) @db.Timestamp(0)
+  expired    Boolean   @default(false)
+  amount     Int
+  error      String?   @db.Text
+  created_at DateTime  @default(now()) @db.DateTime(0)
+  updated_at DateTime? @default(now()) @db.DateTime(0)
+  users      users     @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_rails_081dc04a02")
+
+  @@index([user_id], map: "fk_rails_081dc04a02")
+}
+
+model ratings {
+  id         Int      @id @default(autoincrement())
+  meme_id    String   @db.VarChar(10)
+  rating     Int
+  user_id    BigInt
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+  memes      memes    @relation(fields: [meme_id], references: [id], onUpdate: Restrict, map: "fk_rails_5e0ad156ae")
+  users      users    @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_rails_a7dfeb9f5f")
+
+  @@index([meme_id], map: "fk_rails_5e0ad156ae")
+  @@index([user_id], map: "fk_rails_a7dfeb9f5f")
+}
+
+model realms {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.Text
+  slug       String   @db.Text
+  user_id    BigInt
+  created_at DateTime @default(now()) @db.DateTime(0)
+  updated_at DateTime @default(now()) @db.DateTime(0)
+  memes      memes[]
+  users      users    @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_rails_4b86445131")
+
+  @@index([user_id], map: "fk_rails_4b86445131")
+}
+
+model relationships {
+  id                                      Int      @id @default(autoincrement())
+  follower_id                             BigInt
+  following_id                            BigInt
+  created_at                              DateTime @default(now()) @db.Timestamp(0)
+  updated_at                              DateTime @default(now()) @db.Timestamp(0)
+  users_relationships_follower_idTousers  users    @relation("relationships_follower_idTousers", fields: [follower_id], references: [id], onUpdate: Restrict, map: "fk_rails_8c9a6d4759")
+  users_relationships_following_idTousers users    @relation("relationships_following_idTousers", fields: [following_id], references: [id], onUpdate: Restrict, map: "fk_rails_99bf6afbfa")
+
+  @@index([follower_id], map: "fk_rails_8c9a6d4759")
+  @@index([following_id], map: "fk_rails_99bf6afbfa")
+}
+
+model reports {
+  id                               Int       @id @default(autoincrement())
+  user_id                          BigInt
+  meme_id                          String    @db.VarChar(10)
+  reason                           String    @db.Text
+  description                      String    @db.Text
+  assignee_id                      BigInt?
+  status                           Int       @default(0)
+  comment                          String?   @db.Text
+  created_at                       DateTime  @default(now()) @db.Timestamp(0)
+  updated_at                       DateTime  @default(now()) @db.Timestamp(0)
+  resolved_at                      DateTime? @db.Timestamp(0)
+  users_reports_assignee_idTousers users?    @relation("reports_assignee_idTousers", fields: [assignee_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_rails_12eb92a4f5")
+  users_reports_user_idTousers     users     @relation("reports_user_idTousers", fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_rails_c7699d537d")
+
+  @@index([assignee_id], map: "fk_rails_12eb92a4f5")
+  @@index([user_id], map: "fk_rails_c7699d537d")
+}
+
+model schema_migrations {
+  version String @id @db.VarChar(255)
+}
+
+model subscriptions {
+  id         Int      @id @default(autoincrement())
+  user_id    BigInt
+  started    DateTime @default(now()) @db.Timestamp(0)
+  expires    DateTime @default(now()) @db.Timestamp(0)
+  unlimited  Boolean  @default(false)
+  expired    Boolean  @default(false)
+  created_at DateTime @db.DateTime(6)
+  updated_at DateTime @db.DateTime(6)
+  users      users    @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_rails_933bdff476")
+
+  @@index([user_id], map: "fk_rails_933bdff476")
+}
+
+model transfers {
+  id                               Int      @id @default(autoincrement())
+  sender_id                        BigInt
+  user_id                          BigInt
+  meme_id                          String   @db.VarChar(10)
+  status                           Int
+  created_at                       DateTime @default(now()) @db.Timestamp(0)
+  updated_at                       DateTime @default(now()) @db.Timestamp(0)
+  users_transfers_sender_idTousers users    @relation("transfers_sender_idTousers", fields: [sender_id], references: [id], onUpdate: Restrict, map: "fk_rails_29d6daaff8")
+  users_transfers_user_idTousers   users    @relation("transfers_user_idTousers", fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_rails_344b52b7fd")
+  memes                            memes    @relation(fields: [meme_id], references: [id], onUpdate: Restrict, map: "fk_rails_6f9fbfad2a")
+
+  @@index([sender_id], map: "fk_rails_29d6daaff8")
+  @@index([user_id], map: "fk_rails_344b52b7fd")
+  @@index([meme_id], map: "fk_rails_6f9fbfad2a")
+}
+
+model users {
+  id                                              BigInt          @id
+  access_token                                    String?         @db.Text
+  permissions                                     Int             @default(0)
+  staff_perms                                     BigInt          @default(0)
+  status                                          Int             @default(0)
+  logging                                         Int             @default(0)
+  code                                            String?         @unique(map: "index_users_on_code") @db.VarChar(32)
+  username                                        String          @unique(map: "index_users_on_username") @db.VarChar(37)
+  password                                        String?         @db.Text
+  fcmToken                                        String?         @db.Text
+  bio                                             String?         @db.Text
+  noti_meme                                       Int             @default(11)
+  noti_follow                                     Int             @default(11)
+  noti_reports                                    Int             @default(11)
+  dark                                            Int             @default(0)
+  age                                             Int             @default(2)
+  avatar                                          String?         @db.Text
+  disabled                                        Boolean         @default(false)
+  name_color                                      String?         @db.Text
+  custom_bg_url                                   String?         @db.Text
+  custom_bg_loc                                   Int             @default(0)
+  user_bg_loc                                     Int             @default(0)
+  show_custom_bg                                  Boolean         @default(true)
+  custom_bg_color                                 String?         @db.Text
+  logintype                                       Int             @default(0)
+  emailonfail                                     Boolean         @default(false)
+  emailonsuccess                                  Boolean         @default(false)
+  email                                           String?         @db.Text
+  email_status                                    Int             @default(0)
+  email_code                                      String?         @db.Text
+  resetpass_code                                  String?         @db.Text
+  mc_code                                         String?         @db.Text
+  mc_login_code                                   String?         @db.Text
+  created_at                                      DateTime        @default(now()) @db.Timestamp(0)
+  updated_at                                      DateTime        @default(now()) @db.Timestamp(0)
+  last_login                                      DateTime?       @default(now()) @db.Timestamp(0)
+  tos                                             Boolean?
+  authkeys                                        authkeys[]
+  comments                                        comments[]
+  credits_credits_holder_idTousers                credits[]       @relation("credits_holder_idTousers")
+  credits_credits_owner_idTousers                 credits[]       @relation("credits_owner_idTousers")
+  integrations                                    integrations[]
+  logs                                            logs[]
+  memes                                           memes[]
+  modlogs                                         modlogs[]
+  notifications_notifications_sender_idTousers    notifications[] @relation("notifications_sender_idTousers")
+  notifications_notifications_user_idTousers      notifications[] @relation("notifications_user_idTousers")
+  payments                                        payments[]
+  ratings                                         ratings[]
+  realms                                          realms[]
+  relationships_relationships_follower_idTousers  relationships[] @relation("relationships_follower_idTousers")
+  relationships_relationships_following_idTousers relationships[] @relation("relationships_following_idTousers")
+  reports_reports_assignee_idTousers              reports[]       @relation("reports_assignee_idTousers")
+  reports_reports_user_idTousers                  reports[]       @relation("reports_user_idTousers")
+  subscriptions                                   subscriptions[]
+  transfers_transfers_sender_idTousers            transfers[]     @relation("transfers_sender_idTousers")
+  transfers_transfers_user_idTousers              transfers[]     @relation("transfers_user_idTousers")
+}

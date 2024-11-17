@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@nuxt/eslint": "^0.6.1",
+    "@prisma/nuxt": "^0.0.35",
     "@sidebase/nuxt-auth": "^0.8.2",
-    "drizzle-orm": "^0.36.1",
     "mysql2": "^3.11.4",
     "nuxt": "^3.14.159",
     "vue": "^3.5.12",
@@ -23,8 +23,8 @@
     "@nuxt/eslint-config": "^0.6.1",
     "@nuxt/image": "^1.8.1",
     "@pinia/nuxt": "^0.7.0",
+    "@prisma/client": "^5.22.0",
     "@vueuse/nuxt": "^11.2.0",
-    "drizzle-kit": "^0.28.0",
     "eslint": "^9.14.0",
     "vuetify-nuxt-module": "^0.18.3"
   }
