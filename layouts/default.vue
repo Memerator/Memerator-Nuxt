@@ -76,6 +76,12 @@
 // const user = useSupabaseUser().value
 import NavbarItem from "~/components/NavbarItem.vue";
 
+useHead({
+  htmlAttrs: {
+    lang: 'en'
+  }
+})
+
 const loggedIn = false
 
 const route = useRoute()
