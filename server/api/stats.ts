@@ -1,6 +1,6 @@
-import {Stats} from "~/types/stats";
+import type {Stats} from "~/types/stats";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async () => {
     // Fetch the stats from the API
     const res: Response = await fetch(`https://api.memerator.me/v1/stats`, {
         headers: {

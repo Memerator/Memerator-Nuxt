@@ -13,46 +13,42 @@
       <th>Count</th>
     </tr>
     </thead>
-    <tbody>
-    <tr v-for="(item, index) in statsArray" :key="index">
-      <td>{{ item[0] }}</td> <!-- Key -->
-      <td>{{ item[1] }}</td> <!-- Value -->
+    <tbody v-if="!stats">
+    <tr>
+      <td colspan="2">Loading...</td>
+    </tr>
+    </tbody>
+    <tbody v-else>
+    <tr>
+      <td>Memes</td>
+      <td>{{ stats.memes }}</td>
+    </tr>
+    <tr>
+      <td>Ratings</td>
+      <td>{{ stats.ratings }}</td>
+    </tr>
+    <tr>
+      <td>Unique Memers</td>
+      <td>{{ stats.unique_memers }}</td>
+    </tr>
+    <tr>
+      <td>Users</td>
+      <td>{{ stats.website_users }}</td>
     </tr>
     </tbody>
   </v-table>
 </template>
 
-<script lang="ts">
-import {defineComponent} from 'vue'
+<script setup lang="ts">
 import type {Stats} from "~/types/stats";
 
-export default defineComponent({
-  name: "stats",
+useSeoMeta({
+  title: 'Site Statistics - Memerator',
+  description: 'View the site stats here!',
+})
 
-  setup() {
-    useSeoMeta({
-      title: 'Site Statistics - Memerator',
-      description: 'View the site stats here!',
-    })
-  },
-
-  data() {
-    return {
-      stats: {} as Stats
-    }
-  },
-
-  beforeMount() {
-    $fetch<Stats>('/api/stats').then((res) => {
-      this.stats = res
-    })
-  },
-
-  computed: {
-    statsArray() {
-      return Object.entries(this.stats);
-    }
-  }
+const { data: stats } = await useFetch<Stats>('/api/stats', {
+  lazy: true,
 })
 </script>
 
