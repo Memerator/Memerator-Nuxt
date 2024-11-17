@@ -41,11 +41,9 @@
 
 <script setup lang="ts">
 import type {Stats} from "~/types/stats";
+import {metaTags} from "~/utils/meta";
 
-useSeoMeta({
-  title: 'Site Statistics - Memerator',
-  description: 'View the site stats here!',
-})
+metaTags("Site Statistics", "View the site stats here!");
 
 const { data: stats } = await useFetch<Stats>('/api/stats', {
   lazy: true,
