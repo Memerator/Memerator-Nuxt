@@ -1,6 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+
+    timeline: {
+      enabled: true
+    }
+  },
+
+  ssr: false,
 
   runtimeConfig: {
     memeratorApiKey: process.env.MEMERATOR_API_KEY,
@@ -18,14 +26,13 @@ export default defineNuxtConfig({
     }
   },
 
-  experimental: {
-    asyncContext: true
-  },
-
   modules: [
     "@pinia/nuxt",
     "@nuxt/image",
     "@vueuse/nuxt",
-    'vuetify-nuxt-module'
-  ]
+    'vuetify-nuxt-module',
+    "@nuxt/eslint"
+  ],
+
+  compatibilityDate: "2024-11-12"
 })
