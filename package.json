@@ -17,6 +17,7 @@
     "mysql2": "^3.11.4",
     "nuxt": "^3.14.159",
     "vue": "^3.5.12",
+    "vue-masonry": "^0.16.0",
     "vue-router": "^4.4.5"
   },
   "devDependencies": {

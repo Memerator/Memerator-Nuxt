@@ -26,6 +26,10 @@ export default defineNuxtConfig({
     }
   },
 
+  plugins: [
+    { src: '~/plugins/vue-masonry', mode: 'client' }
+  ],
+
   modules: [
     "@pinia/nuxt",
     "@nuxt/image",
