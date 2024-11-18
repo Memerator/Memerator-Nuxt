@@ -1,19 +1,45 @@
-import {Meme} from "~/types/meme";
-import {Comment} from "~/types/comment";
+import prisma from "~/lib/prisma";
+
+export interface MemeCommentsResponse {
+    id: number;
+    text: string;
+    created_at: Date;
+    updated_at: Date;
+    author: {
+        id: bigint;
+        username: string;
+    }
+}
 
 export default defineEventHandler(async (event) => {
     const id = getRouterParam(event, 'id')
 
-    // Fetch the meme from the API
-    const commentRes: Response = await fetch(`https://api.memerator.me/v1/meme/${id}/comments`, {
-        headers: {
-            Authorization: useRuntimeConfig().memeratorApiKey,
+    const commentsSql = await prisma.comments.findMany({
+        where: {
+            meme_id: id
+        },
+        include: {
+            users: {
+                select: {
+                    username: true
+                }
+            }
         }
     })
 
-    // json time
-    const comments: Comment[] = await commentRes.json()
+    const comments: MemeCommentsResponse[] = commentsSql.map(comment => {
+        return {
+            id: comment.id,
+            text: comment.text,
+            created_at: comment.created_at,
+            updated_at: comment.updated_at,
+            author: {
+                id: comment.user_id,
+                username: comment.users.username
+            }
+        }
+    })
 
-    // Return the meme
+    // Return the comments
     return comments
 })

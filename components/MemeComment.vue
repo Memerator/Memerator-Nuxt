@@ -1,7 +1,7 @@
 <template>
   <v-card
       :title="author"
-      :subtitle="timestamp"
+      :subtitle="formatTimestamp()"
       :text="comment"
       variant="tonal"
       :loading="loading"
@@ -30,6 +30,12 @@ export default defineComponent({
     loading: {
       type: Boolean,
       default: false
+    }
+  },
+
+  methods: {
+    formatTimestamp() {
+      return new Date(this.timestamp).toLocaleString()
     }
   }
 })

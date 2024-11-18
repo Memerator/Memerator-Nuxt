@@ -8,10 +8,10 @@
         </p>
 
         <h2>Author</h2>
-        [pfp]
-        <a :style="`color: #${meme.author.pro.name_color}`" :href="`/profile/${meme.author.username}`">
+        <v-avatar v-if="meme.author.avatar" :image="meme.author.avatar" size="25" />
+        <a :style="`color: #${meme.author.name_color}`" :href="`/profile/${meme.author.username}`">
           {{ meme.author.username }}
-        </a> <i v-if="meme.author.perks.verified" class="fas fa-badge-check text-blue" />
+        </a> <i v-if="meme.author.verified" class="fas fa-badge-check text-blue" />
 
         <h2>Age Rating</h2>
         {{ meme.age }}
@@ -25,53 +25,62 @@
 
         <p v-if="false /* if contest */">
           <span class="heading">Contest</span>
-          <br/>
+          <br>
           This meme is a part of a contest
         </p>
 
         <h2>Submitted</h2>
-        {{ meme.timestamp }}
+        {{ meme.created_at }}
 
         <h2>Ratings</h2>
-        <p v-if="meme.rating.total === 0">No one has rated this meme yet!</p>
-        <!--        <div class="ratings">-->
-        <!--          <span class="empty-stars"></span>-->
-        <!--          <span class="full-stars" :style="`width: ${meme.rating.average * 20}%`"></span>-->
-        <!--        </div>-->
-        <p>
-          {{ meme.rating.average }} average from {{ meme.rating.total }} meme reviewers.
-        </p>
+        <p v-if="meme.ratings.total === 0">No one has rated this meme yet!</p>
 
-        <!--        <% (0..4).each do |num| %>-->
-        <!--        <div class="side">-->
-        <!--          <div><%= t('.x_star', star: 5 - num) %></div>-->
-        <!--        </div>-->
-        <!--        <div class="middle">-->
-        <!--          <div class="bar-container">-->
-        <!--            <div class="bar-<%= 5 - num %>" style="width: <%= @per[4 - num] / @per.sum.to_f * 100 %>%;"></div>-->
-        <!--          </div>-->
-        <!--        </div>-->
-        <!--        <div class="side right">-->
-        <!--          <div><%= @per[4 - num] %></div>-->
-        <!--        </div>-->
-        <!--        <% end %>-->
+        <div class="d-flex align-center flex-column my-auto">
+          <div class="text-h2 mt-5">
+            {{ meme.ratings.average }}
+            <span class="text-h6 ml-n3">/5</span>
+          </div>
+
+          <v-rating :model-value="meme.ratings.average" color="yellow-darken-3" half-increments />
+          <div class="px-3">{{ meme.ratings.total }} ratings</div>
+        </div>
+
+        <v-list bg-color="transparent" class="d-flex flex-column-reverse" density="compact">
+          <v-list-item v-for="(rating,i) in 5" :key="i">
+            <v-progress-linear
+                :model-value="meme.ratings[(i + 1 as 1|2|3|4|5)] * 100 / meme.ratings.total"
+                class="mx-n5"
+                color="yellow-darken-3"
+                height="20"
+                rounded
+            />
+
+            <template #prepend>
+              <span>{{ rating }}</span>
+              <v-icon class="mx-3" icon="mdi-star"/>
+            </template>
+
+            <template #append>
+              <div class="rating-values">
+                <span class="d-flex justify-end"> {{ meme.ratings[(i + 1 as 1|2|3|4|5)] }} </span>
+              </div>
+            </template>
+          </v-list-item>
+        </v-list>
 
         <h2>Actions</h2>
         <v-btn id="copyurl" color="cyan" data-clipboard-text="meme.url" class="mr-1">Share</v-btn>
         <!--        <% if @ownsmeme %>-->
-        <NuxtLink v-if="isAuthor" :href="`/meme/${meme.memeid}/ocr`" class="mr-1">
+        <NuxtLink v-if="isAuthor" :href="`/meme/${meme.id}/ocr`" class="mr-1">
           <v-btn color="grey">OCR</v-btn>
         </NuxtLink>
-        <NuxtLink v-if="isAuthor" :href="`/meme/${meme.memeid}/transfer`" class="mr-1">
+        <NuxtLink v-if="isAuthor" :href="`/meme/${meme.id}/transfer`" class="mr-1">
           <v-btn color="primary">Transfer</v-btn>
         </NuxtLink>
-        <v-btn v-if="!meme.disabled && isAuthor" @click="disableMeme" color="red" class="mr-1">Disable</v-btn>
-        <v-btn v-if="meme.disabled && isAuthor" @click="enableMeme" color="green" class="mr-1">Enable</v-btn>
-        <NuxtLink v-if="isAuthor && meme.author.perks.pro" :href="`/meme/${meme.memeid}/ratings`" class="mr-1">
+        <v-btn v-if="!meme.disabled && isAuthor" color="red" class="mr-1" @click="disableMeme">Disable</v-btn>
+        <v-btn v-if="meme.disabled && isAuthor" color="green" class="mr-1" @click="enableMeme">Enable</v-btn>
+        <NuxtLink v-if="isAuthor && meme.author.pro" :href="`/meme/${meme.id}/ratings`" class="mr-1">
           <v-btn color="warning">Ratings</v-btn>
-        </NuxtLink>
-        <NuxtLink v-if="true" :href="`https://mods.memerator.me/meme/${meme.memeid}`" class="mr-1">
-          <v-btn color="green">Manage</v-btn>
         </NuxtLink>
         <!--        <% end %>-->
         <!--        <% if !@ownsmeme && !@user.nil? %>-->
@@ -133,23 +142,23 @@
         <!--        <% end %>-->
       </v-col>
 
-      <v-col xl="8">
+      <v-col lg="8" xl="8">
         <NuxtImg :src="meme.url" style="width: 100%"/>
       </v-col>
     </v-row>
 
-    <hr/>
+    <hr>
 
     <v-row>
       <v-col>
-        <h2 v-if="commentsLoading">Loading Comments...</h2>
+        <h2 v-if="commentsStatus === 'pending' || comments == null">Loading Comments...</h2>
         <h2 v-else>Comments - {{ comments.length }}</h2>
 
-        <leave-a-comment-button class="mb-3" :disabled="commentsLoading" />
+        <leave-a-comment-button class="mb-3" :disabled="commentsStatus === 'pending'" />
 
-        <meme-comment v-for="comment in comments" class="mt-3"
-                      :comment="comment.content" :author="comment.author.username" :timestamp="comment.timestamp.toString()">
-        </meme-comment>
+        <meme-comment
+            v-for="comment in comments" :key="comment.id" class="mt-3"
+            :comment="comment.text" :author="comment.author?.username" :timestamp="comment.created_at.toString()" />
 
         <!--        <% if @user.nil? %>-->
         <!--        <p><%= t('.sign_in_to_comment') %></p>-->
@@ -243,27 +252,23 @@
   </main>
 </template>
 
-<script lang="ts">
-import type {Meme} from "~/types/meme";
-import type {Comment} from "~/types/comment";
+<script setup lang="ts">
+import type {MemeResponse} from "~/server/api/meme/[id]";
+import type {MemeCommentsResponse} from "~/server/api/meme/[id]/comments";
 
-import {defineComponent} from 'vue'
-import type {UseSeoMetaInput} from "@unhead/schema";
+const route = useRoute()
+const id = route.params.id
 
-export default defineComponent({
-  name: "MemeView",
+const { data: meme } = await useFetch<MemeResponse>(`/api/meme/${id}`)
 
-  async setup() {
-    const route = useRoute()
-    const id = route.params.id
+const { data: comments, status: commentsStatus } = await useFetch<MemeCommentsResponse[]>(`/api/meme/${id}/comments`, {
+  lazy: true
+})
 
-    let meme: Meme;
-    await $fetch<Meme>(`/api/meme/${id}`).then((res) => {
-      meme = res
-    })
+const isAuthor = false
 
     // useSeoMeta({
-    //   title: `Meme Viewing ${meme.memeid} - Memerator`,
+    //   title: `Meme Viewing ${meme.id} - Memerator`,
     //   ogImage: {
     //     secureUrl: meme.url,
     //     url: meme.url,
@@ -276,127 +281,96 @@ export default defineComponent({
     //   author: meme.author.username
     // } as UseSeoMetaInput);
 
-    const memeisreal = true // check if null
+//
+// export default defineComponent({
+//   name: "MemeView",
+//
+//
+//     const memeisreal = true // check if null
+//
+// // TODO: render markdown
+// //     redner = Redcarpet::Render::HTML.new(escape_html: true, no_images: true, no_styles: true, no_links: true, prettify: true)
+// // const markdown = meme.caption
+// // const no_markdown = meme.caption
+//
+//     if (!memeisreal) {
+//       let show = false
+//       let dontshowreason = "Meme doesn't exist!"
+//     }
+// //
+// // if @meme.dmca?
+// //     @show = false
+// //     @dontshowreason = "Meme unavailable due to DMCA takedown!"
+// //   return
+// // end
+// //
+// // @author = @meme.author
+// // @ownsmeme = @author.id == session[:id]
+// //
+// // if @user.nil? && @meme.mature?
+// //     @show = false
+// //     @dontshowreason = 'Meme is marked as Mature! You must create an account and select "Mature" as your Meme Age Rating to view this meme.'
+// // return
+// // end
+// //
+// // unless @meme.approved?
+// //     @show = false
+// //     @dontshowreason = 'Meme is not yet approved!'
+// // return
+// // end
+// //
+// // if !@user.nil? && !@user.staff?
+// // if @meme.disabled? && @meme.author != @user
+// // @show = false
+// // @dontshowreason = 'Meme is disabled!'
+// // return
+// // end
+// //
+// // if @meme.mature? && @meme.author != @user && @user.age != 4
+// // @show = false
+// // @dontshowreason = 'Meme is marked as Mature! You must manually enable Mature memes in appearance settings.'
+// // return
+// // end
+// //
+// // if @meme.teen? && @meme.author != @user && @user.age < 2
+// // @show = false
+// // @dontshowreason = 'Meme is marked as Teen! You must manually enable Teen memes in appearance settings.'
+// // return
+// // end
+// // end
+// //
+// // @caption = @meme.formatted_caption
+// //
+// //
+// // @contest = @meme.contest
+// // @realm = @meme.realm
+// //
+// //
+// // end
+//
+ function   disableMeme() {
+  if (meme.value == null) {
+    console.log("Meme is null")
+    return
+  }
 
-// TODO: render markdown
-//     redner = Redcarpet::Render::HTML.new(escape_html: true, no_images: true, no_styles: true, no_links: true, prettify: true)
-// const markdown = meme.caption
-// const no_markdown = meme.caption
-
-    if (!memeisreal) {
-      let show = false
-      let dontshowreason = "Meme doesn't exist!"
-    }
-//
-// if @meme.dmca?
-//     @show = false
-//     @dontshowreason = "Meme unavailable due to DMCA takedown!"
-//   return
-// end
-//
-// @author = @meme.author
-// @ownsmeme = @author.id == session[:id]
-//
-// if @user.nil? && @meme.mature?
-//     @show = false
-//     @dontshowreason = 'Meme is marked as Mature! You must create an account and select "Mature" as your Meme Age Rating to view this meme.'
-// return
-// end
-//
-// unless @meme.approved?
-//     @show = false
-//     @dontshowreason = 'Meme is not yet approved!'
-// return
-// end
-//
-// if !@user.nil? && !@user.staff?
-// if @meme.disabled? && @meme.author != @user
-// @show = false
-// @dontshowreason = 'Meme is disabled!'
-// return
-// end
-//
-// if @meme.mature? && @meme.author != @user && @user.age != 4
-// @show = false
-// @dontshowreason = 'Meme is marked as Mature! You must manually enable Mature memes in appearance settings.'
-// return
-// end
-//
-// if @meme.teen? && @meme.author != @user && @user.age < 2
-// @show = false
-// @dontshowreason = 'Meme is marked as Teen! You must manually enable Teen memes in appearance settings.'
-// return
-// end
-// end
-//
-// @caption = @meme.formatted_caption
-//
-// @comments = @meme.comments
-// unless @comments.empty?
-//     author_ids = @comments.map(&:user_id).uniq
-//
-// profiles = User.where(id: author_ids).to_a
-// @profiles = {}
-// profiles.each do |profile|
-// @profiles[profile.id] = profile
-// end
-// end
-//
-// @contest = @meme.contest
-// @realm = @meme.realm
-//
-// @per = []
-//
-// if @meme.rated?
-//     (1..5).each do |e|
-// @per[e - 1] = @meme.rating_numbers.count(e)
-// end
-// end
-
-
-    const comments = [] as Comment[]
-
-    const isAuthor = true;
-
-
-    return { meme, comments, isAuthor }
-  },
-
-  mounted() {
-    this.retrieveComments()
-  },
-
-  data() {
-    return {
-      commentsLoading: true,
-    }
-  },
-
-  methods: {
-    retrieveComments() {
-      // retrieve comments
-      console.log("Retrieving comments")
-      this.commentsLoading = true
-
-      $fetch<Comment[]>(`/api/meme/${this.meme.memeid}/comments`).then((res) => {
-        this.comments = res
-        this.commentsLoading = false
-      })
-    },
-
-    disableMeme() {
       // disables meme
       console.log("Disabling meme")
-      this.meme.disabled = true
-    },
-
-    enableMeme() {
-      // disables meme
-      console.log("Enabling meme")
-      this.meme.disabled = false
+      meme.value.disabled = true
     }
+
+function enableMeme() {
+  if (meme.value == null) {
+    console.log("Meme is null")
+    return
   }
-})
+
+  // disables meme
+  console.log("Disabling meme")
+  meme.value.disabled = false
+    }
+//   }
+// })
 
 
 /*
