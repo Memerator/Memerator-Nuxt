@@ -105,14 +105,18 @@ export default class User implements IUser {
         return new User(input);
     }
 
-    public profilePicture(): string {
+    static profilePicture(encryptedEmail: string): string {
+        const email = decryptAES(encryptedEmail);
+
+        // md5 encrypt the email
+        const md5Email = crypto.createHash("md5").update(email).digest("hex");
+
+        return "https://www.gravatar.com/avatar/" + md5Email;
+    }
+
+    public profilePicture() {
         if (this.avatar === "gravatar" && this.email_status === 2 && this.email !== null) {
-            const email = decryptAES(this.email);
-
-            // md5 encrypt the email
-            const md5Email = crypto.createHash("md5").update(email).digest("hex");
-
-            return "https://www.gravatar.com/avatar/" + md5Email;
+            return User.profilePicture(this.email);
         } else {
             return "";
         }

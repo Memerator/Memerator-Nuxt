@@ -1,13 +1,13 @@
 <template>
   <main>
     <h1 id="fix">Recent Memes</h1>
-    <p>Total Memes: {{ memes.length }} memes!</p>
+    <p>Total Memes: {{ data?.total }} memes!</p>
 
-    <p>Showing memes {{ low }} to {{ high }}</p>
+    <p>Showing memes {{ data?.min }} to {{ data?.max }}</p>
 
     <div class="mb-3">
-      <v-btn :disabled="page < 2" color="primary" @click="fetchMemes(page - 1)"><i class="fas fa-arrow-circle-left"></i> Previous</v-btn>
-      <v-btn :disabled="noMoreMemes" color="primary" @click="fetchMemes(page + 1)"><i class="fas fa-arrow-circle-right"></i> Next</v-btn>
+      <v-btn :disabled="page < 2" color="primary" @click="page -= 1"><i class="fas fa-arrow-circle-left"/> Previous</v-btn>
+      <v-btn :disabled="noMoreMemes" color="primary" @click="page += 1"><i class="fas fa-arrow-circle-right"/> Next</v-btn>
     </div>
 
     <!--    <div v-if="showAds" class="p-4 bg-body-secondary rounded-3">-->
@@ -21,109 +21,52 @@
     <!--      </script>-->
     <!--    </div>-->
 
+    <v-card v-for="meme in data?.memes" :key="meme.id" class="mb-10">
+      <PageLink :href="`/meme/${meme.id}`"><NuxtImg :src="meme.url" class="card-img-top" alt="..." style="width: 100%" /></PageLink>
+      <v-card-text>{{ meme.caption }}</v-card-text>
+      <v-card-actions>
+        <v-list-item class="w-100">
+          <template #prepend>
+            <v-avatar v-if="meme.author.avatar" :image="meme.author.avatar" />
+          </template>
 
-    <!-- center the card -->
-    <v-row>
-      <v-col v-for="meme in memes" :key="meme.memeid">
-        <v-card>
-          <NuxtImg :src="meme.url" class="card-img-top" alt="..." />
-          <v-card-title>{{ meme.author.username }}</v-card-title>
-          <v-card-subtitle>{{ meme.timestamp }}</v-card-subtitle>
-          <v-card-text>{{ meme.caption }}</v-card-text>
-          <v-card-text>Rating: {{ meme.rating.average }} average from {{ meme.rating.total }} reviewers.</v-card-text>
-          <v-card-actions>
-            <PageLink :href="`/meme/${meme.memeid}`">View Meme</PageLink>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
+          <v-list-item-title>
+            <page-link :href="`/profile/${meme.author.username}`">{{ meme.author.username }}</page-link>
+          </v-list-item-title>
+          <v-list-item-subtitle>{{ new Date(meme.created_at).toLocaleString() }}</v-list-item-subtitle>
 
-    <PageLink v-if="page < 2" class="btn btn-primary disabled" href="#"><i class="fas fa-arrow-circle-left"></i>
-      Previous
-    </PageLink>
-    <PageLink v-else class="btn btn-primary" :href="`/meme/recents?page=${page - 1}`"><i
-        class="fas fa-arrow-circle-left"></i> Previous
-    </PageLink>
+          <template #append>
+            <div class="justify-self-end">
+              <v-icon class="me-1" icon="mdi-star" />
+              {{ meme.ratings.average ?? "No" }} average, {{ meme.ratings.total }} ratings
+            </div>
+          </template>
+        </v-list-item>
+      </v-card-actions>
+    </v-card>
 
-    <PageLink v-if="noMoreMemes" class="btn btn-primary disabled" href="#"><i class="fas fa-arrow-circle-right"></i>
-      Next
-    </PageLink>
-    <PageLink class="btn btn-primary" :href="`/meme/recents?page=${page + 1}`"><i class="fas fa-arrow-circle-right"></i>
-      Next
-    </PageLink>
+    <div class="mb-3">
+      <v-btn :disabled="page < 2" color="primary" @click="page -= 1"><i class="fas fa-arrow-circle-left"/> Previous</v-btn>
+      <v-btn :disabled="noMoreMemes" color="primary" @click="page += 1"><i class="fas fa-arrow-circle-right"/> Next</v-btn>
+    </div>
   </main>
 </template>
 
-<script lang="ts">
-import {defineComponent} from 'vue'
-import type {Meme} from "~/types/meme";
+<script setup lang="ts">
+import type {RecentMemeResponse} from "~/server/api/meme/recents";
 
-export default defineComponent({
-  name: "recents",
+const route = useRoute()
+const page = ref(parseInt((route.query.page || 1).toString()))
 
-  async setup() {
-    const route = useRoute()
-    // check query param
-    const page = parseInt((route.query.page || 1).toString())
+// debug stuff
+// const showAds = false;
 
-    const memes: Meme[] = []
-    let noMoreMemes = false
-    await $fetch<Meme[]>(`/api/meme/recents?page=${page}`).then((res) => {
-      if (res.length < 25) {
-        noMoreMemes = true
-      }
+const noMoreMemes = ref(false)
 
-      for (const meme of res) {
-        if (meme.disabled) continue
-
-        memes.push(meme)
-      }
-    })
-
-    const low = (page - 1) * 25 + 1
-    const high = page * 25
-
-    // debug stuff
-    const showAds = false;
-
-    return {memes, showAds, low, high, page, noMoreMemes}
+const { data } = await useFetch<RecentMemeResponse>('/api/meme/recents', {
+  query: {
+    page
   },
-
-  watch: {
-    // memes deeply
-    memes: {
-      handler() {
-        console.log("Memes changed!")
-      },
-      deep: true
-    }
-  },
-
-  methods: {
-    async fetchMemes(page: Number) {
-      console.log("Fetching memes with page: " + page)
-
-      const res = await $fetch<Meme[]>(`/api/meme/recents?page=${page}`)
-      if (res.length < 25) {
-        this.noMoreMemes = true
-      }
-
-      // remove memes from the array WITHOUT doing = []
-      this.memes.splice(0, this.memes.length)
-
-      for (const meme of res) {
-        if (meme.disabled) continue
-
-        this.memes.push(meme)
-      }
-
-      // refresh the page
-
-      this.page = page
-      // update browser url
-      this.$router.push(`/meme/recents?page=${page}`)
-    }
-  }
 })
 </script>
 
