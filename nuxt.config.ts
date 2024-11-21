@@ -26,6 +26,12 @@ export default defineNuxtConfig({
     }
   },
 
+  prisma: {
+    autoSetupPrisma: false,
+    installClient: false,
+    installStudio: false
+  },
+
   plugins: [
     { src: '~/plugins/vue-masonry', mode: 'client' }
   ],
