@@ -1,4 +1,6 @@
-import Vue from 'vue'
 import {VueMasonryPlugin} from 'vue-masonry'
 
-Vue.use(VueMasonryPlugin)
+// noinspection JSUnresolvedReference
+export default defineNuxtPlugin((context) => {
+    context.vueApp.use(VueMasonryPlugin);
+});
