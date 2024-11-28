@@ -45,5 +45,13 @@ export default defineNuxtConfig({
     "@prisma/nuxt"
   ],
 
+  vite: {
+    resolve: {
+      alias: {
+        '.prisma/client/index-browser': './node_modules/.prisma/client/index-browser.js',
+      },
+    },
+  },
+
   compatibilityDate: "2024-11-12"
 })
