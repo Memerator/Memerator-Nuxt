@@ -42,7 +42,8 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     'vuetify-nuxt-module',
     "@nuxt/eslint",
-    "@prisma/nuxt"
+    "@prisma/nuxt",
+    '@nuxthub/core'
   ],
 
   vite: {

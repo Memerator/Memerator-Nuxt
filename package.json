@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@nuxt/eslint": "^0.6.2",
+    "@nuxthub/core": "^0.8.8",
     "@prisma/nuxt": "^0.0.35",
     "@sidebase/nuxt-auth": "^0.8.2",
     "mysql2": "^3.11.4",
@@ -27,6 +28,7 @@
     "@prisma/client": "^5.22.0",
     "@vueuse/nuxt": "^11.3.0",
     "eslint": "^9.15.0",
-    "vuetify-nuxt-module": "^0.18.3"
+    "vuetify-nuxt-module": "^0.18.3",
+    "wrangler": "^3.95.0"
   }
 }
