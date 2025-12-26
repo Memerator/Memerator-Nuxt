@@ -1,5 +1,6 @@
 import { PrismaMariaDb } from '@prisma/adapter-mariadb'
-import { PrismaClient } from '~/prisma/generated/client'
+// noinspection ES6PreferShortImport Cloudflare might hate this one!
+import { PrismaClient } from '../../prisma/generated/client'
 
 const prismaClientSingleton = () => {
     const pool = new PrismaMariaDb({
