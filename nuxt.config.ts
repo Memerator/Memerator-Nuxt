@@ -26,12 +26,6 @@ export default defineNuxtConfig({
     }
   },
 
-  prisma: {
-    autoSetupPrisma: false,
-    installClient: false,
-    installStudio: false
-  },
-
   plugins: [
     { src: '~/plugins/vue-masonry', mode: 'client' }
   ],
@@ -41,18 +35,8 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@vueuse/nuxt",
     'vuetify-nuxt-module',
-    "@nuxt/eslint",
-    "@prisma/nuxt",
-    '@nuxthub/core'
+    "@nuxt/eslint"
   ],
-
-  vite: {
-    resolve: {
-      alias: {
-        '.prisma/client/index-browser': './node_modules/.prisma/client/index-browser.js',
-      },
-    },
-  },
 
   compatibilityDate: "2024-11-12"
 })

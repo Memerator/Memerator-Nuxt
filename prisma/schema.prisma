@@ -1,11 +1,11 @@
 generator client {
-  provider      = "prisma-client-js"
+  provider      = "prisma-client"
   binaryTargets = ["native"]
+  output = "./generated"
 }
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
 }
 
 model ar_internal_metadata {

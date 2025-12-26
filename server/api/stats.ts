@@ -1,5 +1,4 @@
 import type {Stats} from "~/types/stats";
-import prisma from "~/lib/prisma";
 
 export default defineEventHandler(async () => {
     // Get the results simultaneously

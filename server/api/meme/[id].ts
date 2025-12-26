@@ -1,4 +1,3 @@
-import prisma from "~/lib/prisma";
 import type {IMemeFromSQL} from "~/models/meme";
 import User from "~/models/user";
 

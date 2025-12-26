@@ -1,5 +1,4 @@
 import type {Perks, Pro, Stats} from "~/types/user";
-import prisma from "~/lib/prisma";
 import User from "~/models/user";
 
 export interface ProfileUsernameResponse {
